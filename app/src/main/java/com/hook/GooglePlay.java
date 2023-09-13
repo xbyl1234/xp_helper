@@ -34,124 +34,49 @@ import de.robv.android.xposed.XC_MethodReplacement;
 import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
-import okhttp3.MediaType;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
 
 public class GooglePlay implements IXposedHookLoadPackage {
-    static String host = "127.0.0.1";
-    static short port = 11111;
+    static Set<String> isids = new HashSet<>();
+    static final String IsIdFilePath = "/data/data/com.android.vending/isid";
 
-    static class MainProcess {
-        HttpService server = new HttpService(host, port);
-        Set<String> isids = new HashSet<>();
-        static final String IsIdFilePath = "/data/data/com.android.vending/isid";
-
-        public MainProcess() {
-            try {
-                if (!units.FileExists(IsIdFilePath)) {
-                    return;
-                }
-                String data = new String(units.load_file(IsIdFilePath));
-                isids.addAll(Arrays.asList(data.split("\n")));
-            } catch (IOException e) {
-                log.e("read isid file error: " + e);
+    static boolean LoadIsidFile() {
+        try {
+            if (!units.FileExists(IsIdFilePath)) {
+                return false;
             }
-        }
-
-        void StartService() {
-            server.registerHandler("/check_google_play", new HttpService.HttpServerCallback() {
-                @Override
-                public String OnHttp(String url, JSONObject body) throws Throwable {
-                    synchronized (this) {
-                        String isid = body.getString("isid");
-                        if (isids.contains(isid)) {
-                            return "success";
-                        } else {
-                            return "failed";
-                        }
-                    }
-                }
-            });
-            server.registerHandler("/add_google_play", new HttpService.HttpServerCallback() {
-                @Override
-                public String OnHttp(String url, JSONObject body) throws Throwable {
-                    synchronized (this) {
-                        String isid = body.getString("isid");
-                        isids.add(isid);
-                        units.AppendToFile(IsIdFilePath, isid + "\n");
-                        return "success";
-                    }
-                }
-            });
-            try {
-                server.start();
-            } catch (Exception e) {
-                Log.e("fake_device", "start http error!", e);
-                e.printStackTrace();
-            }
+            String data = new String(units.load_file(IsIdFilePath));
+            isids.addAll(Arrays.asList(data.split("\n")));
+            return true;
+        } catch (IOException e) {
+            log.e("read isid file error: " + e);
+            return false;
         }
     }
 
-    static class SubProcess {
-        OkHttpClient client = new OkHttpClient();
-        public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
+    static boolean CheckGooglePlay(String isid) {
+        synchronized (isids) {
+            if (!LoadIsidFile()) {
+                log.e("load isid file error!");
+            }
+            return isids.contains(isid);
+        }
+    }
 
-        public boolean post(String url, com.alibaba.fastjson.JSONObject data) {
-            RequestBody body = RequestBody.create(data.toJSONString(), JSON);
-            Request request = new Request.Builder()
-                    .url("http://" + host + ":" + port + url)
-                    .post(body)
-                    .build();
+    static boolean AddGooglePlay(String isid) {
+        synchronized (isids) {
             try {
-                Response response = client.newCall(request).execute();
-                if (!response.isSuccessful()) {
-                    return false;
-                }
-                if (!response.body().string().equals("success")) {
-                    log.e("http request failed: " + response.body().string());
-                    return false;
-                }
+                units.AppendToFile(IsIdFilePath, isid + "\n");
                 return true;
             } catch (Throwable e) {
-                log.e("http request error: " + e);
-                e.printStackTrace();
+                log.e("add isid error: " + e);
                 return false;
             }
         }
-
-        boolean CheckGooglePlay(String isid) {
-            synchronized (this) {
-                com.alibaba.fastjson.JSONObject json = new com.alibaba.fastjson.JSONObject();
-                json.put("isid", isid);
-                return post("/check_google_play", json);
-            }
-        }
-
-        boolean AddGooglePlay(String isid) {
-            synchronized (this) {
-                com.alibaba.fastjson.JSONObject json = new com.alibaba.fastjson.JSONObject();
-                json.put("isid", isid);
-                return post("/add_google_play", json);
-            }
-        }
     }
-
-    static MainProcess mainProcess = null;
-    static SubProcess subProcess = null;
 
     @Override
     public void handleLoadPackage(XC_LoadPackage.LoadPackageParam lpparam) throws Throwable {
         log.i("processName: " + lpparam.processName + "\t" + "inject google play");
-        if (lpparam.processName.equals("com.android.vending")) {
-            mainProcess = new MainProcess();
-            mainProcess.StartService();
-
-        }
-        subProcess = new SubProcess();
-
         try {
             HookUrlDelivery_v29(lpparam);
             HookDownload_v29(lpparam);
@@ -188,7 +113,7 @@ public class GooglePlay implements IXposedHookLoadPackage {
 
         String isid = queries.get("isid");
         log.i("processName: " + lpparam.processName + "\t" + "find google play isid: " + isid);
-        subProcess.AddGooglePlay(isid);
+        AddGooglePlay(isid);
         return true;
     }
 
@@ -210,7 +135,7 @@ public class GooglePlay implements IXposedHookLoadPackage {
 
     static public Object Get_CANNOT_CONNECT_Enum(Object[] ErrorCodeClassConstructor) {
         for (Object obj : ErrorCodeClassConstructor) {
-            if (obj.toString().equalsIgnoreCase("CANNOT_CONNECT")) {
+            if (obj.toString().equalsIgnoreCase("8")) {
                 return obj;
             }
         }
@@ -227,17 +152,16 @@ public class GooglePlay implements IXposedHookLoadPackage {
         String isid = queries.get("isid");
         boolean isGooglePlay = false;
         if (cpn != null && !cpn.equals("")) {
-            isGooglePlay = subProcess.CheckGooglePlay(cpn);
+            isGooglePlay = CheckGooglePlay(cpn);
         }
         if (isid != null && !isid.equals("")) {
-            isGooglePlay |= subProcess.CheckGooglePlay(isid);
+            isGooglePlay |= CheckGooglePlay(isid);
         }
         if (isGooglePlay) {
             Class DownloadServiceException = HookTools.FindClass("com.google.android.finsky.downloadservicecommon.DownloadServiceException", lpparam.classLoader);
             Class ErrorCodeClass = HookTools.FindClass("ido", lpparam.classLoader);
-            Constructor DownloadServiceExceptionConstructor = DownloadServiceException.getDeclaredConstructor(ErrorCodeClass, String.class, Throwable.class);
-            Object[] ErrorCodeClassConstructor = ErrorCodeClass.getEnumConstants();
-            Object CANNOT_CONNECT = Get_CANNOT_CONNECT_Enum(ErrorCodeClassConstructor);
+            Object CANNOT_CONNECT = Get_CANNOT_CONNECT_Enum(ErrorCodeClass.getEnumConstants());
+            Constructor DownloadServiceExceptionConstructor = HookTools.GetConstructor(DownloadServiceException, ErrorCodeClass, String.class, Throwable.class);
             log.i("processName: " + lpparam.processName + "\t" + "intercept download isid: " + isid + " cpn: " + cpn);
             throw (Throwable) HookTools.CallConstructor(DownloadServiceExceptionConstructor, CANNOT_CONNECT, "Cannot connect to " + url, new SocketTimeoutException(""));
         } else {

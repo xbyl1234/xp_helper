@@ -34,7 +34,6 @@ public class Google implements IXposedHookLoadPackage {
 //                new Throwable().printStackTrace();
 //            }
 //        });
-
 //        XposedHelpers.findAndHookMethod(XposedHelpers.findClass("cvbj", lpparam.classLoader), "b",
 //                ContentResolver.class, Uri.class, String.class, String.class, new XC_MethodHook() {
 //                    @Override

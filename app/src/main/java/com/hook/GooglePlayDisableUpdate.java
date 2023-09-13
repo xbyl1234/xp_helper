@@ -1,30 +1,27 @@
 package com.hook;
 
-import android.net.Uri;
-import android.os.RemoteException;
-import android.util.Log;
+import android.app.Application;
+import android.content.Context;
+import android.content.IntentFilter;
+import android.os.Environment;
+import android.text.TextUtils;
 
-import com.alibaba.fastjson.annotation.JSONField;
 import com.common.HookTools;
-import com.common.HttpService;
 import com.common.log;
 import com.common.units;
 
-import org.json.JSONObject;
-
-import java.io.ByteArrayInputStream;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
-import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -35,11 +32,11 @@ import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
 
-public class GooglePlay implements IXposedHookLoadPackage {
+public class GooglePlayDisableUpdate implements IXposedHookLoadPackage {
     static Set<String> isids = new HashSet<>();
     static final String IsIdFilePath = "/data/data/com.android.vending/isid";
 
-    static boolean LoadIsidFile() {
+    private static boolean LoadIsidFile() {
         try {
             if (!units.FileExists(IsIdFilePath)) {
                 return false;
@@ -53,7 +50,7 @@ public class GooglePlay implements IXposedHookLoadPackage {
         }
     }
 
-    static boolean CheckGooglePlay(String isid) {
+    private static boolean CheckGooglePlay(String isid) {
         synchronized (isids) {
             if (!LoadIsidFile()) {
                 log.e("load isid file error!");
@@ -62,7 +59,7 @@ public class GooglePlay implements IXposedHookLoadPackage {
         }
     }
 
-    static boolean AddGooglePlay(String isid) {
+    private static boolean AddGooglePlay(String isid) {
         synchronized (isids) {
             try {
                 units.AppendToFile(IsIdFilePath, isid + "\n");
@@ -76,17 +73,68 @@ public class GooglePlay implements IXposedHookLoadPackage {
 
     @Override
     public void handleLoadPackage(XC_LoadPackage.LoadPackageParam lpparam) throws Throwable {
-        log.i("processName: " + lpparam.processName + "\t" + "inject google play");
-        try {
-            HookUrlDelivery_v29(lpparam);
-            HookDownload_v29(lpparam);
-        } catch (Exception e) {
-            log.i("error: " + e);
-            e.printStackTrace();
-        }
+        XposedHelpers.findAndHookMethod(Application.class, "attach", Context.class, new XC_MethodHook() {
+            @Override
+            protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+                Context context = (Context) param.args[0];
+                String packageVersion = context.getPackageManager().getPackageInfo("com.android.vending", 0).versionName;
+                log.i("inject processName: " + lpparam.processName + ", pkg version: " + packageVersion);
+                if (packageVersion.contains("29.5.14")) {
+                    packageVersion = "29.5.14";
+                } else if (packageVersion.contains("36.9.16")) {
+                    packageVersion = "36.9.16";
+                } else if (packageVersion.contains("37.2.18")) {
+                    packageVersion = "37.2.18";
+                }
+                PkgInstaller.HookInstaller();
+                GooglePlayDisableUpdate.HookDownload(lpparam, packageVersion, param1 -> {
+                });
+            }
+        });
     }
 
-    static boolean HttpDelivery_v29(XC_LoadPackage.LoadPackageParam lpparam, XC_MethodHook.MethodHookParam param) throws Throwable {
+    static class ClassInfo {
+        String DeliveryClass;
+        String DeliveryMethod;
+        String DeliveryMethodParams1;
+        String DownloadClass;
+        String DownloadMethod;
+        String ErrorEnumClass;
+    }
+
+    static Map<String, ClassInfo> ClassInfoMap = new HashMap<>();
+
+    static {
+        ClassInfo v29 = new ClassInfo();
+        v29.DeliveryClass = "qhh";
+        v29.DeliveryMethod = "b";
+        v29.DeliveryMethodParams1 = "drh";
+        v29.DownloadClass = "ieb";
+        v29.DownloadMethod = "b";
+        v29.ErrorEnumClass = "ido";
+        ClassInfoMap.put("29.5.14", v29);
+
+        ClassInfo v37 = new ClassInfo();
+        v37.DeliveryClass = "utb";
+        v37.DeliveryMethod = "b";
+        v37.DeliveryMethodParams1 = "idt";
+        v37.DownloadClass = "nel";
+        v37.DownloadMethod = "c";
+        v37.ErrorEnumClass = "ndj";
+        ClassInfoMap.put("37.2.18", v37);
+    }
+
+    private static Object Get_CANNOT_CONNECT_Enum(Object[] ErrorCodeClassConstructor) {
+        for (Object obj : ErrorCodeClassConstructor) {
+            if (obj.toString().equalsIgnoreCase("8")) {
+                return obj;
+            }
+        }
+        log.e("not find enum CANNOT_CONNECT");
+        return null;
+    }
+
+    private static boolean httpDelivery(XC_LoadPackage.LoadPackageParam lpparam, XC_MethodHook.MethodHookParam param) throws Throwable {
         Object request = param.args[0];
         Class<?> requestClass = request.getClass();
 //        String name = requestClass.getName();
@@ -117,33 +165,7 @@ public class GooglePlay implements IXposedHookLoadPackage {
         return true;
     }
 
-    static void HookUrlDelivery_v29(XC_LoadPackage.LoadPackageParam lpparam) {
-        Class targetClass = HookTools.FindClass("qhh", lpparam.classLoader);
-        Class paramsClass1 = HookTools.FindClass("drh", lpparam.classLoader);
-        if (targetClass == null || paramsClass1 == null) {
-            log.e("some class not find: " + targetClass + " " + paramsClass1);
-            return;
-        }
-        XposedHelpers.findAndHookMethod(targetClass, "b", paramsClass1, Map.class, new XC_MethodReplacement() {
-            @Override
-            protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                HttpDelivery_v29(lpparam, param);
-                return XposedBridge.invokeOriginalMethod(param.method, param.thisObject, param.args);
-            }
-        });
-    }
-
-    static public Object Get_CANNOT_CONNECT_Enum(Object[] ErrorCodeClassConstructor) {
-        for (Object obj : ErrorCodeClassConstructor) {
-            if (obj.toString().equalsIgnoreCase("8")) {
-                return obj;
-            }
-        }
-        log.e("not find enum CANNOT_CONNECT");
-        return null;
-    }
-
-    static boolean HttpDownload_v29(XC_LoadPackage.LoadPackageParam lpparam, XC_MethodHook.MethodHookParam param) throws Throwable {
+    private static boolean httpDownload(XC_LoadPackage.LoadPackageParam lpparam, XC_MethodHook.MethodHookParam param, ClassInfo classInfo) throws Throwable {
         String url = (String) param.args[0];
         log.i("processName: " + lpparam.processName + "\t" + "download url: " + url);
         URL _url = new URL(url);
@@ -159,7 +181,7 @@ public class GooglePlay implements IXposedHookLoadPackage {
         }
         if (isGooglePlay) {
             Class DownloadServiceException = HookTools.FindClass("com.google.android.finsky.downloadservicecommon.DownloadServiceException", lpparam.classLoader);
-            Class ErrorCodeClass = HookTools.FindClass("ido", lpparam.classLoader);
+            Class ErrorCodeClass = HookTools.FindClass(classInfo.ErrorEnumClass, lpparam.classLoader);
             Object CANNOT_CONNECT = Get_CANNOT_CONNECT_Enum(ErrorCodeClass.getEnumConstants());
             Constructor DownloadServiceExceptionConstructor = HookTools.GetConstructor(DownloadServiceException, ErrorCodeClass, String.class, Throwable.class);
             log.i("processName: " + lpparam.processName + "\t" + "intercept download isid: " + isid + " cpn: " + cpn);
@@ -170,20 +192,39 @@ public class GooglePlay implements IXposedHookLoadPackage {
         return false;
     }
 
+    interface DownloadCallback {
+        void OnDownloadBefore(XC_MethodHook.MethodHookParam param);
+    }
 
-    static void HookDownload_v29(XC_LoadPackage.LoadPackageParam lpparam) {
-        Class targetClass = HookTools.FindClass("ieb", lpparam.classLoader);
-        if (targetClass == null) {
+    public static void HookDownload(XC_LoadPackage.LoadPackageParam lpparam, String version, DownloadCallback callback) {
+        ClassInfo classInfo = ClassInfoMap.get(version);
+
+        Class targetClassDelivery = HookTools.FindClass(classInfo.DeliveryClass, lpparam.classLoader);
+        Class paramsClass1 = HookTools.FindClass(classInfo.DeliveryMethodParams1, lpparam.classLoader);
+        if (targetClassDelivery == null || paramsClass1 == null) {
+            log.e("some class not find: " + targetClassDelivery + " " + paramsClass1);
+            return;
+        }
+        XposedHelpers.findAndHookMethod(targetClassDelivery, classInfo.DeliveryMethod, paramsClass1, Map.class, new XC_MethodReplacement() {
+            @Override
+            protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                httpDelivery(lpparam, param);
+                return XposedBridge.invokeOriginalMethod(param.method, param.thisObject, param.args);
+            }
+        });
+
+        Class targetClassDownload = HookTools.FindClass(classInfo.DownloadClass, lpparam.classLoader);
+        if (targetClassDownload == null) {
             log.e("class ieb not find");
             return;
         }
-        XposedHelpers.findAndHookMethod(targetClass, "b", String.class, Map.class, boolean.class, new XC_MethodReplacement() {
+        XposedHelpers.findAndHookMethod(targetClassDownload, classInfo.DownloadMethod, String.class, Map.class, boolean.class, new XC_MethodReplacement() {
             @Override
             protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                HttpDownload_v29(lpparam, param);
+                httpDownload(lpparam, param, classInfo);
+                callback.OnDownloadBefore(param);
                 return XposedBridge.invokeOriginalMethod(param.method, param.thisObject, param.args);
             }
         });
     }
-
 }

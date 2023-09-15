@@ -4,6 +4,7 @@
 <!--        <item>com.google.android.gms</item>-->
 <!--        <item>com.google.android.gsf</item>-->
 <!--        <item>com.android.vending</item>-->
-        <item>com.fantasy.aquarium.ufou</item>
+<!--        <item>com.fantasy.aquarium.ufou</item>-->
+        <item>com.mergetale.arlyug</item>
     </string-array>
 </resources>

@@ -47,6 +47,8 @@ public class PangleHook implements IXposedHookLoadPackage {
 //                        }
                     }
                 });
+
+        log.i("hook DonotJump_1 success");
     }
 
     public static void DonotJump_2(XC_LoadPackage.LoadPackageParam lpparam) {
@@ -72,6 +74,7 @@ public class PangleHook implements IXposedHookLoadPackage {
 //                        log.i("click: param M:" + HookTools.GetFieldValue(model, params, "M") + " ret: " + param.getResult());
                     }
                 });
+        log.i("hook DonotJump_2 success");
     }
 
 
@@ -88,6 +91,7 @@ public class PangleHook implements IXposedHookLoadPackage {
                         return true;
                     }
                 });
+        log.i("hook DonotJump_3 success");
     }
 
     public static void DonotJump_4(XC_LoadPackage.LoadPackageParam lpparam) {
@@ -116,6 +120,7 @@ public class PangleHook implements IXposedHookLoadPackage {
             @Override
             protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                 super.afterHookedMethod(param);
+                new Throwable().printStackTrace();
                 log.i("interaction_method: " + param.getResult());
             }
         });
@@ -125,7 +130,11 @@ public class PangleHook implements IXposedHookLoadPackage {
     public void handleLoadPackage(XC_LoadPackage.LoadPackageParam lpparam) throws Throwable {
         log.i("inject " + lpparam.processName);
         WitchAdsType(lpparam);
-//        DonotJump_3(lpparam);
+        try {
+            DonotJump_3(lpparam);
+        } catch (Throwable e) {
+            log.i("error: " + e);
+        }
 //        DonotJump_4(lpparam);
 
 

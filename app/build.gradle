@@ -3,11 +3,11 @@ plugins {
 }
 
 android {
-    namespace 'com.xp_helper'
+    namespace 'com.org.adredirect'
     compileSdk 33
 
     defaultConfig {
-        applicationId "com.xp_helper"
+        applicationId "com.org.adredirect"
         minSdk 27
         targetSdk 33
         versionCode 1
@@ -36,8 +36,10 @@ android {
     buildTypes {
         release {
             minifyEnabled false
-           }
+        }
     }
+
+
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8

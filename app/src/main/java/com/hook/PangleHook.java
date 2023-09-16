@@ -1,12 +1,18 @@
 package com.hook;
 
+import android.app.Application;
+import android.content.Context;
+
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.parser.ParserConfig;
 import com.alibaba.fastjson.serializer.SerializeConfig;
 import com.common.HookTools;
 import com.common.log;
+import com.common.units;
 
 import org.json.JSONObject;
+
+import java.io.IOException;
 
 import de.robv.android.xposed.IXposedHookLoadPackage;
 import de.robv.android.xposed.XC_MethodHook;
@@ -21,9 +27,10 @@ import de.robv.android.xposed.callbacks.XC_LoadPackage;
 
 public class PangleHook implements IXposedHookLoadPackage {
 
-    public static void DonotJump_1(XC_LoadPackage.LoadPackageParam lpparam) {
+    public static void DoNotJump_1(XC_LoadPackage.LoadPackageParam lpparam) throws IOException {
         Class core_b = HookTools.FindClass("com.bytedance.sdk.openadsdk.core.b", lpparam.classLoader);
         if (core_b == null) {
+            log.i("hook DoNotJump_1 error");
             return;
         }
         XposedHelpers.findAndHookMethod(core_b, "b",
@@ -48,20 +55,22 @@ public class PangleHook implements IXposedHookLoadPackage {
                     }
                 });
 
-        log.i("hook DonotJump_1 success");
+        log.i("hook DoNotJump_1 success");
+        units.save_file("/data/data/" + lpparam.packageName + "/lsp", "inject".getBytes());
     }
 
-    public static void DonotJump_2(XC_LoadPackage.LoadPackageParam lpparam) {
+    public static void DoNotJump_2(XC_LoadPackage.LoadPackageParam lpparam) throws IOException {
         Class model = HookTools.FindClass("com.bytedance.sdk.openadsdk.core.model.o", lpparam.classLoader);
         Class model_m = HookTools.FindClass("com.bytedance.sdk.openadsdk.core.model.m", lpparam.classLoader);
         if (model == null || model_m == null) {
+            log.i("hook DoNotJump_2 error");
             return;
         }
         XposedHelpers.findAndHookMethod(model_m, "b", model,
                 new XC_MethodReplacement() {
                     @Override
                     protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                        log.i("do not jump by DonotJump_2");
+                        log.i("do not jump by DoNotJump_2");
                         return true;
 //                        Object params = param.args[0];
 //                        try {
@@ -74,32 +83,34 @@ public class PangleHook implements IXposedHookLoadPackage {
 //                        log.i("click: param M:" + HookTools.GetFieldValue(model, params, "M") + " ret: " + param.getResult());
                     }
                 });
-        log.i("hook DonotJump_2 success");
+        log.i("hook DoNotJump_2 success");
+        units.save_file("/data/data/" + lpparam.packageName + "/lsp", "inject".getBytes());
     }
 
-
-    public static void DonotJump_3(XC_LoadPackage.LoadPackageParam lpparam) {
+    public static void DoNotJump_3(XC_LoadPackage.LoadPackageParam lpparam) throws IOException {
         Class model = HookTools.FindClass("com.bytedance.sdk.openadsdk.core.model.o", lpparam.classLoader);
         if (model == null) {
+            log.i("hook DoNotJump_3 error");
             return;
         }
         XposedHelpers.findAndHookMethod(model, "a",
                 new XC_MethodReplacement() {
                     @Override
                     protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                        log.i("do not jump by DonotJump_3");
+                        log.i("do not jump by DoNotJump_3");
                         return true;
                     }
                 });
-        log.i("hook DonotJump_3 success");
+        log.i("hook DoNotJump_3 success");
+        units.save_file("/data/data/" + lpparam.packageName + "/lsp", "inject".getBytes());
     }
 
-    public static void DonotJump_4(XC_LoadPackage.LoadPackageParam lpparam) {
+    public static void DoNotJump_4(XC_LoadPackage.LoadPackageParam lpparam) throws IOException {
         XposedHelpers.findAndHookMethod(HookTools.FindClass("android.widget.RelativeLayout", lpparam.classLoader), "performClick",
                 new XC_MethodReplacement() {
                     @Override
                     protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                        log.i("do not jump by DonotJump_4");
+                        log.i("do not jump by DoNotJump_4");
                         Throwable th = new Throwable();
                         StackTraceElement[] sts = th.getStackTrace();
                         for (StackTraceElement item : sts) {
@@ -108,8 +119,9 @@ public class PangleHook implements IXposedHookLoadPackage {
                         return XposedBridge.invokeOriginalMethod(param.method, param.thisObject, param.args);
                     }
                 });
+        log.i("hook DoNotJump_4 success");
+        units.save_file("/data/data/" + lpparam.packageName + "/lsp", "inject".getBytes());
     }
-
 
     public static void WitchAdsType(XC_LoadPackage.LoadPackageParam lpparam) {
         Class model = HookTools.FindClass("com.bytedance.sdk.openadsdk.core.model.o", lpparam.classLoader);
@@ -126,18 +138,32 @@ public class PangleHook implements IXposedHookLoadPackage {
         });
     }
 
+
+
     @Override
     public void handleLoadPackage(XC_LoadPackage.LoadPackageParam lpparam) throws Throwable {
         log.i("inject " + lpparam.processName);
-        WitchAdsType(lpparam);
+
         try {
-            DonotJump_3(lpparam);
+            WitchAdsType(lpparam);
         } catch (Throwable e) {
-            log.i("error: " + e);
+            log.i("WitchAdsType error: " + e);
         }
-//        DonotJump_4(lpparam);
+
+//        try {
+//            DoNotJump_3(lpparam);
+//        } catch (Throwable e) {
+//            log.i("DoNotJump_3 error: " + e);
+//        }
 
 
+        try {
+            DoNotJump_2(lpparam);
+        } catch (Throwable e) {
+            log.i("DoNotJump_2 error: " + e);
+        }
+
+//        DoNotJump_4(lpparam);
 //        XposedHelpers.findAndHookMethod(HookTools.FindClass("com.bytedance.sdk.openadsdk.core.video.c.a", lpparam.classLoader),
 //                "a",
 //                long.class, long.class, new XC_MethodReplacement() {
@@ -151,3 +177,13 @@ public class PangleHook implements IXposedHookLoadPackage {
 //                });
     }
 }
+
+
+//    public static void LogInjectSuccess() {
+//        XposedHelpers.findAndHookMethod(Application.class, "attach", Context.class, new XC_MethodHook() {
+//            @Override
+//            protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+//                Context context = (Context) param.args[0];
+//            }
+//        });
+//    }

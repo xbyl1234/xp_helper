@@ -150,18 +150,18 @@ public class PangleHook implements IXposedHookLoadPackage {
             log.i("WitchAdsType error: " + e);
         }
 
-//        try {
-//            DoNotJump_3(lpparam);
-//        } catch (Throwable e) {
-//            log.i("DoNotJump_3 error: " + e);
-//        }
-
-
         try {
-            DoNotJump_2(lpparam);
+            DoNotJump_3(lpparam);
         } catch (Throwable e) {
-            log.i("DoNotJump_2 error: " + e);
+            log.i("DoNotJump_3 error: " + e);
         }
+
+
+//        try {
+//            DoNotJump_2(lpparam);
+//        } catch (Throwable e) {
+//            log.i("DoNotJump_2 error: " + e);
+//        }
 
 //        DoNotJump_4(lpparam);
 //        XposedHelpers.findAndHookMethod(HookTools.FindClass("com.bytedance.sdk.openadsdk.core.video.c.a", lpparam.classLoader),

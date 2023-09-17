@@ -43,6 +43,7 @@ public class log {
     public static void Log(int level, String msg) {
         msg = LogLevel.LogTag[level] + "\t" + Tag + ":\t\t\t" + msg;
         AdbLog(level, msg);
+        XposedBridge.log(msg);
     }
 
     public static void d(String msg) {

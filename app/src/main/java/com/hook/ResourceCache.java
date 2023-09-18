@@ -43,7 +43,7 @@ public class ResourceCache {
             }
             return responseBody.bytes();
         } catch (Throwable e) {
-            log.e("lsposed http request error: " + e);
+            log.e("cache http request error: " + e);
             e.printStackTrace();
             throw e;
         }
@@ -66,7 +66,7 @@ public class ResourceCache {
             }
             return responseBody.bytes();
         } catch (Throwable e) {
-            log.e("lsposed http request error: " + e);
+            log.e("cache http request error: " + e);
             e.printStackTrace();
             throw e;
         }

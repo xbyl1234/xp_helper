@@ -3,11 +3,11 @@ plugins {
 }
 
 android {
-    namespace 'com.org.adredirect'
+    namespace 'com.hook.DisableFontsDownload'
     compileSdk 33
 
     defaultConfig {
-        applicationId "com.org.adredirect"
+        applicationId "com.hook.DisableFontsDownload"
         minSdk 27
         targetSdk 33
         versionCode 1

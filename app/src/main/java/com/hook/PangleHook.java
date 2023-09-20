@@ -132,7 +132,7 @@ public class PangleHook implements IXposedHookLoadPackage {
             @Override
             protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                 super.afterHookedMethod(param);
-                new Throwable().printStackTrace();
+//                new Throwable().printStackTrace();
                 log.i("interaction_method: " + param.getResult());
             }
         });

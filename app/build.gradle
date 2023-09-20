@@ -3,11 +3,11 @@ plugins {
 }
 
 android {
-    namespace 'com.hook.DisableFontsDownload'
+    namespace 'com.PangleHook'
     compileSdk 33
 
     defaultConfig {
-        applicationId "com.hook.DisableFontsDownload"
+        applicationId "com.PangleHook"
         minSdk 27
         targetSdk 33
         versionCode 1

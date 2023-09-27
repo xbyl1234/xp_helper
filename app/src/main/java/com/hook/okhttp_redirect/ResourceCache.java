@@ -1,4 +1,4 @@
-package com.hook;
+package com.hook.okhttp_redirect;
 
 import android.net.Uri;
 
@@ -18,25 +18,7 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
 
-public class ResourceCache {
-    //缓存id
-    static class CacheId {
-        public String md5;
-        public String channel;
-        public String path;
-
-        public Map<String, String> toMap() {
-            Map<String, String> map = new HashMap<>();
-            if (!md5.isEmpty())
-                map.put("md5", md5);
-            if (!channel.isEmpty())
-                map.put("channel", channel);
-            if (!path.isEmpty())
-                map.put("path", path);
-            return map;
-        }
-    }
-
+public class ResourceCache implements ResourceCacheInterface {
     static class ApiResponse {
         int code;
         String data;
@@ -121,7 +103,6 @@ public class ResourceCache {
         }
     }
 
-
     //查询是否有缓存
     public boolean HasCache(CacheId id) throws Throwable {
         JSONObject respJson = httpGet("/has_cache", id.toMap());
@@ -138,14 +119,10 @@ public class ResourceCache {
         return Base64.getDecoder().decode(data);
     }
 
-    //上次缓存
+    //上传缓存
     public boolean UploadCache(CacheId id) throws Throwable {
         JSONObject respJson = httpGet("/upload_cache", id.toMap());
         return respJson.getString("data").equals("true");
-    }
-
-    public CacheId SaveCacheFile(String path, String channel, byte[] data) throws Throwable {
-
     }
 
 }

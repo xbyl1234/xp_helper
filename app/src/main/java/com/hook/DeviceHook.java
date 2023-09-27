@@ -8,8 +8,8 @@ import android.content.Context;
 import android.os.UserManager;
 import android.provider.Settings;
 
-import com.common.HookTools;
 import com.common.log;
+import com.tools.hooker.HookTools;
 
 import de.robv.android.xposed.IXposedHookLoadPackage;
 import de.robv.android.xposed.XC_MethodHook;

@@ -3,11 +3,11 @@ plugins {
 }
 
 android {
-    namespace 'com.PangleHook'
+    namespace 'com.RedirectFontsDownload'
     compileSdk 33
 
     defaultConfig {
-        applicationId "com.PangleHook"
+        applicationId "com.RedirectFontsDownload"
         minSdk 27
         targetSdk 33
         versionCode 1

@@ -2,8 +2,8 @@ package com.hook;
 
 import android.content.pm.PackageInstaller;
 
-import com.common.HookTools;
 import com.common.log;
+import com.tools.hooker.HookTools;
 
 import de.robv.android.xposed.IXposedHookLoadPackage;
 import de.robv.android.xposed.XC_MethodReplacement;

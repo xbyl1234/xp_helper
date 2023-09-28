@@ -10,13 +10,13 @@ public class ResourceCacheTest implements ResourceCacheInterface {
 
     //下载缓存
     @Override
-    public byte[] DownloadCache(CacheId id) throws Throwable {
+    public Cache GetCache(CacheId id) throws Throwable {
         return null;
     }
 
     //上次缓存
     @Override
-    public boolean UploadCache(CacheId id) throws Throwable {
+    public boolean UploadCache(Cache id) throws Throwable {
         return true;
     }
 }

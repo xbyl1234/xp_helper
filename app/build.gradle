@@ -3,11 +3,11 @@ plugins {
 }
 
 android {
-    namespace 'com.HookUCPackage'
+    namespace 'com.RedirectFontsDownload'
     compileSdk 33
 
     defaultConfig {
-        applicationId "com.HookUCPackage"
+        applicationId "com.RedirectFontsDownload"
         minSdk 27
         targetSdk 33
         versionCode 1

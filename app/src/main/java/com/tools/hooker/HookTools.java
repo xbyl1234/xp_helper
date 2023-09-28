@@ -162,6 +162,20 @@ public class HookTools {
         }
     }
 
+    public static boolean SetField(Field field, Object obj, Object value) {
+        try {
+            boolean oldAcc = field.isAccessible();
+            field.setAccessible(true);
+            field.set(obj, value);
+            field.setAccessible(oldAcc);
+            return true;
+        } catch (Throwable e) {
+            log.e("set field value " + field + " error!");
+            e.printStackTrace();
+            return false;
+        }
+    }
+
     public static boolean SetField(Object obj, String name, Object value) {
         try {
             Field field = GetField(obj.getClass(), name);

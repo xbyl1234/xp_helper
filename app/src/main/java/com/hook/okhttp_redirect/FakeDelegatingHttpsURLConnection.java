@@ -8,17 +8,11 @@ import com.tools.hooker.FakeMethod;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.ProtocolException;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
-import java.security.Permission;
-import java.security.Principal;
-import java.security.cert.Certificate;
 import java.util.List;
 import java.util.Map;
 
 import javax.net.ssl.HttpsURLConnection;
-import javax.net.ssl.SSLPeerUnverifiedException;
 
 import de.robv.android.xposed.XC_MethodHook;
 
@@ -39,7 +33,7 @@ public class FakeDelegatingHttpsURLConnection extends FakeClassBase {
     @Override
     public boolean ShouldFake(XC_MethodHook.MethodHookParam params) {
         URL url = GetObjectUrl(params);
-        if (url != null && url.getHost().contains("fonts.gstatic.com")) {
+        if (url != null && url.getHost().contains("fonts.gstatic.com") || url.getHost().contains("baidu.com")) {
             CacheId cacheId = new CacheId(url);
             try {
                 boolean hasCache = resourceCache.HasCache(cacheId);
@@ -57,14 +51,14 @@ public class FakeDelegatingHttpsURLConnection extends FakeClassBase {
     public InputStream getInputStream(XC_MethodHook.MethodHookParam params) throws IOException {
         URL url = GetObjectUrl(params);
         CacheId cacheId = new CacheId(url);
-        byte[] data = new byte[0];
+        Cache data = null;
         try {
-            data = resourceCache.DownloadCache(cacheId);
+            data = resourceCache.GetCache(cacheId);
         } catch (Throwable e) {
             log.e("DownloadCache " + url + " error: " + e);
             throw new IOException();
         }
-        return new RedirectInputStream(url, data);
+        return new RedirectInputStream(url, data.GetBodyByte());
     }
 
     @FakeMethod(needXposedParams = true)

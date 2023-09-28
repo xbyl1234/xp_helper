@@ -104,24 +104,27 @@ public class ResourceCache implements ResourceCacheInterface {
     }
 
     //查询是否有缓存
+    @Override
     public boolean HasCache(CacheId id) throws Throwable {
         JSONObject respJson = httpGet("/has_cache", id.toMap());
         return respJson.getString("data").equals("true");
     }
 
     //下载缓存
-    public byte[] DownloadCache(CacheId id) throws Throwable {
+    @Override
+    public Cache GetCache(CacheId id) throws Throwable {
         JSONObject respJson = httpGet("/download_cache", id.toMap());
         String data = respJson.getString("data");
         if (data == null || data.isEmpty()) {
             throw new Exception("download error");
         }
-        return Base64.getDecoder().decode(data);
+        return new Cache(id, Base64.getDecoder().decode(data));
     }
 
     //上传缓存
-    public boolean UploadCache(CacheId id) throws Throwable {
-        JSONObject respJson = httpGet("/upload_cache", id.toMap());
+    @Override
+    public boolean UploadCache(Cache cache) throws Throwable {
+        JSONObject respJson = httpGet("/upload_cache", cache.id.toMap());
         return respJson.getString("data").equals("true");
     }
 

@@ -2,19 +2,11 @@ package com.hook;
 
 import android.app.Application;
 import android.content.Context;
-import android.content.IntentFilter;
-import android.os.Environment;
-import android.text.TextUtils;
-
-import com.common.HookTools;
 import com.common.log;
 import com.common.units;
+import com.tools.hooker.HookTools;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.net.SocketTimeoutException;

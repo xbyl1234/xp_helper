@@ -19,9 +19,9 @@ import de.robv.android.xposed.callbacks.XC_LoadPackage;
 public class GoogleRedirectFontsDownload implements IXposedHookLoadPackage {
     @Override
     public void handleLoadPackage(XC_LoadPackage.LoadPackageParam lpparam) throws Throwable {
-        if (!lpparam.packageName.equals("com.google.android.gms")) {
-            return;
-        }
+//        if (!lpparam.packageName.equals("com.google.android.gms")) {
+//            return;
+//        }
         log.i("hook fonts inject process: " + lpparam.processName);
         FakeDelegatingHttpsURLConnection fakeConn = new FakeDelegatingHttpsURLConnection(new ResourceCacheTest());
         Hooker.HookClass(lpparam.classLoader, FakeDelegatingHttpsURLConnection.class, fakeConn);

@@ -1,10 +1,11 @@
 <resources>
     <string name="app_name">xp_helper</string>
     <string-array name="xposed_scope">
-        <item>com.google.android.gms</item>
-<!--        <item>com.google.android.gsf</item>-->
-<!--        <item>com.android.vending</item>-->
-<!--        <item>com.fantasy.aquarium.ufou</item>-->
-<!--        <item>com.mergetale.arlyug</item>-->
+        <!--        <item>com.google.android.gms</item>-->
+        <!--        <item>com.google.android.gsf</item>-->
+        <!--        <item>com.android.vending</item>-->
+        <!--        <item>com.fantasy.aquarium.ufou</item>-->
+        <!--        <item>com.mergetale.arlyug</item>-->
+        <item>com.devices</item>
     </string-array>
 </resources>

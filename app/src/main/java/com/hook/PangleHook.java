@@ -1,14 +1,8 @@
 package com.hook;
 
-import android.app.Application;
-import android.content.Context;
-
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.parser.ParserConfig;
-import com.alibaba.fastjson.serializer.SerializeConfig;
-import com.common.HookTools;
 import com.common.log;
 import com.common.units;
+import com.tools.hooker.HookTools;
 
 import org.json.JSONObject;
 

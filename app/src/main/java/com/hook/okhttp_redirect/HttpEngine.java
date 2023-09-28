@@ -1,12 +1,9 @@
 package com.hook.okhttp_redirect;
 
-import android.net.Network;
-
 import com.common.log;
 import com.tools.hooker.FakeClass;
 import com.tools.hooker.FakeClassBase;
 import com.tools.hooker.FakeMethod;
-import com.tools.hooker.FakeParams;
 import com.tools.hooker.HookTools;
 
 import java.lang.reflect.Field;

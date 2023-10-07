@@ -70,7 +70,7 @@ public class ProxyClass<T> extends ClassBase {
             }
 
             Method method = HookTools.GetMethod(originClass, proxyMethodName, targetMethodParamsType);
-            log.d("will ProxyMethod " + fakeClass.getName() + "." + proxyMethodName);
+//            log.d("will ProxyMethod " + fakeClass.getName() + "." + proxyMethodName);
             methodMap.put(proxyMethodName, method);
         }
     }

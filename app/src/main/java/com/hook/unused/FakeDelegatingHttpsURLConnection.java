@@ -1,6 +1,9 @@
-package com.hook.okhttp_redirect;
+package com.hook.unused;
 
 import com.common.log;
+import com.hook.okhttp_redirect.Cache;
+import com.hook.okhttp_redirect.CacheId;
+import com.hook.okhttp_redirect.ResourceCacheInterface;
 import com.hook.unused.RedirectInputStream;
 import com.hook.unused.RedirectOutputStream;
 import com.tools.hooker.FakeClass;

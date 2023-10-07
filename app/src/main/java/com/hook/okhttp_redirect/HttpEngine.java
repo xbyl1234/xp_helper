@@ -122,6 +122,7 @@ public class HttpEngine extends FakeClassBase {
                     CreateCacheStrategy(req.originObject));
             HookTools.SetField(params.thisObject.getClass(), params.thisObject, "requestBodyOut",
                     CreateRetryableSink());
+            log.i("sendRequest: " + req.url() + ", pass");
             return;
         }
         log.i("call sendRequest " + req.url());
@@ -142,14 +143,15 @@ public class HttpEngine extends FakeClassBase {
             log.i("call after readResponse " + req.url() + ", resp: " + resp);
             if (resp.GetCode() == 200) {
                 Cache newCache = new Cache(req.url(), resp.GetHeaders(), resp.GetBodyBytes());
-                resourceCache.UploadCache(newCache, "/data/data/" + pkgName + "/" + newCache.id.md5);
+                boolean result = resourceCache.UploadCache(newCache, "/data/data/" + pkgName + "/" + newCache.id.md5);
+                log.i("readResponse " + req.url() + ", UploadCache: " + result);
             } else {
                 log.i("readResponse " + req.url() + ", resp error code: " + resp.GetCode());
             }
         } else {
-            log.i("readResponse return cache " + req.url());
             Cache cache = resourceCache.GetCache(cacheId);
             SetResponse(params, cache.CreateResponseBody(req.originObject));
+            log.i("readResponse return cache " + req.url());
         }
     }
 

@@ -2,7 +2,6 @@ package com.hook.okhttp_redirect;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.common.log;
 import com.common.units;
 import com.tools.hooker.HookTools;
 
@@ -98,6 +97,18 @@ public class Cache {
                 : Collections.<String>emptyList();
     }
 
+    public void UpdateHeader(String name, String value) {
+        for (int i = 0, size = headers.length / 2; i < size; i++) {
+            if (name.equalsIgnoreCase(name(i))) {
+                int valueIndex = i * 2 + 1;
+                if (valueIndex < 0 || valueIndex >= headers.length) {
+                    return;
+                }
+                headers[valueIndex] = value;
+            }
+        }
+    }
+
     private Object CreateResponseBody(byte[] body) throws Throwable {
         Class ResponseBodyClass = HookTools.FindClass("com.android.okhttp.ResponseBody");
         Class MediaTypeClass = HookTools.FindClass("com.android.okhttp.MediaType");
@@ -115,6 +126,7 @@ public class Cache {
         Class builder = HookTools.FindClass("com.android.okhttp.Response$Builder");
         ResponseBuilderProxy proxy = new ResponseBuilderProxy(HookTools.CallConstructor(builder));
         proxy.request(req);
+        UpdateHeader("Date", units.GetNowServiceTime());
         proxy.headers(createHeaders());
         proxy.code(responseCode);
         proxy.message(responseMessage);

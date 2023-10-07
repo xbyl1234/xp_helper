@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 public class units {
@@ -171,6 +172,12 @@ public class units {
         }
     }
 
+    static public String GetNowServiceTime() {
+        Date currentDate = new Date();
+        SimpleDateFormat sdf = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z");
+        return sdf.format(currentDate);
+    }
+
     private static String toHexString(byte[] digest) {
         StringBuilder sb = new StringBuilder();
         String hexStr;
@@ -196,11 +203,11 @@ public class units {
         return result;
     }
 
-    public static  byte[] readInputStream(InputStream inputStream) throws IOException {
+    public static byte[] readInputStream(InputStream inputStream) throws IOException {
         byte[] buffer = new byte[1024];
         int len = 0;
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        while((len = inputStream.read(buffer)) != -1) {
+        while ((len = inputStream.read(buffer)) != -1) {
             bos.write(buffer, 0, len);
         }
         bos.close();

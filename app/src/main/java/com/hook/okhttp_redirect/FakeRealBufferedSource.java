@@ -31,11 +31,12 @@ public class FakeRealBufferedSource extends FakeClassBase {
             Method close = source.getClass().getDeclaredMethod("close");
             close.invoke(source);
         } catch (Throwable e) {
-
         }
-
-        Method clear = buffer.getClass().getDeclaredMethod("clear");
-        clear.invoke(buffer);
+        try {
+            Method clear = buffer.getClass().getDeclaredMethod("clear");
+            clear.invoke(buffer);
+        } catch (Throwable e) {
+        }
     }
 
 }

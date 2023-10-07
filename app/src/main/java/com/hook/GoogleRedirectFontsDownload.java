@@ -1,21 +1,11 @@
 package com.hook;
 
 import com.common.log;
-import com.hook.okhttp_redirect.FakeDelegatingHttpsURLConnection;
 import com.hook.okhttp_redirect.HttpEngine;
-import com.hook.okhttp_redirect.OkHttpCall;
 import com.hook.okhttp_redirect.ResourceCacheTest;
-import com.tools.hooker.HookTools;
 import com.tools.hooker.Hooker;
 
-import java.net.HttpURLConnection;
-import java.net.SocketTimeoutException;
-import java.net.URL;
-
 import de.robv.android.xposed.IXposedHookLoadPackage;
-import de.robv.android.xposed.XC_MethodReplacement;
-import de.robv.android.xposed.XposedBridge;
-import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
 
 public class GoogleRedirectFontsDownload implements IXposedHookLoadPackage {
@@ -28,7 +18,7 @@ public class GoogleRedirectFontsDownload implements IXposedHookLoadPackage {
 //        FakeDelegatingHttpsURLConnection fakeConn = new FakeDelegatingHttpsURLConnection(new ResourceCacheTest());
 //        Hooker.HookClass(lpparam.classLoader, FakeDelegatingHttpsURLConnection.class, fakeConn);
 //        Hooker.HookClass(lpparam.classLoader, OkHttpCall.class, new OkHttpCall());
-        Hooker.HookClass(lpparam.classLoader, HttpEngine.class, new HttpEngine(new ResourceCacheTest()));
+        Hooker.HookClass(lpparam.classLoader, HttpEngine.class, new HttpEngine(new ResourceCacheTest(), lpparam.packageName));
 
 //        XposedHelpers.findAndHookMethod(HttpURLConnection.class, "connect", new XC_MethodHook() {
 //            @Override

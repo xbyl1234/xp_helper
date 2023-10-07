@@ -1,5 +1,7 @@
 package com.hook.okhttp_redirect;
 
+import com.common.units;
+
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
@@ -12,6 +14,7 @@ public class CacheId {
 
     public CacheId(URL url) {
         this.url = url;
+        this.md5 = units.MD5(url.toString());
     }
 
     public Map<String, String> toMap() {

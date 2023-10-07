@@ -4,9 +4,11 @@ import android.net.Uri;
 
 import com.alibaba.fastjson.JSONObject;
 import com.common.log;
+import com.common.units;
 
 import java.net.URI;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
@@ -123,7 +125,9 @@ public class ResourceCache implements ResourceCacheInterface {
 
     //上传缓存
     @Override
-    public boolean UploadCache(Cache cache) throws Throwable {
+    public boolean UploadCache(Cache cache, String path) throws Throwable {
+        cache.id.path = path;
+        units.save_file(path, cache.ToJson().toJSONString().getBytes(StandardCharsets.UTF_8));
         JSONObject respJson = httpGet("/upload_cache", cache.id.toMap());
         return respJson.getString("data").equals("true");
     }

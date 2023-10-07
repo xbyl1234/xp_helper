@@ -1,4 +1,4 @@
-package com.hook.okhttp_redirect;
+package com.hook.unused;
 
 import com.common.log;
 import com.tools.hooker.FakeClass;

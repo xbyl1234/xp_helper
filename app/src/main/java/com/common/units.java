@@ -12,6 +12,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.Method;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -168,4 +170,30 @@ public class units {
             return 0;
         }
     }
+
+    private static String toHexString(byte[] digest) {
+        StringBuilder sb = new StringBuilder();
+        String hexStr;
+        for (byte b : digest) {
+            hexStr = Integer.toHexString(b & 0xFF);
+            if (hexStr.length() == 1) {
+                hexStr = "0" + hexStr;
+            }
+            sb.append(hexStr);
+        }
+        return sb.toString();
+    }
+
+    public static String MD5(String text) {
+        String result = null;
+        try {
+            MessageDigest md = MessageDigest.getInstance("MD5");
+            byte[] digest = md.digest(text.getBytes());
+            result = toHexString(digest);
+        } catch (NoSuchAlgorithmException ex) {
+            ex.printStackTrace();
+        }
+        return result;
+    }
+
 }

@@ -1,6 +1,8 @@
 package com.hook.okhttp_redirect;
 
 import com.common.log;
+import com.hook.unused.RedirectInputStream;
+import com.hook.unused.RedirectOutputStream;
 import com.tools.hooker.FakeClass;
 import com.tools.hooker.FakeClassBase;
 import com.tools.hooker.FakeMethod;

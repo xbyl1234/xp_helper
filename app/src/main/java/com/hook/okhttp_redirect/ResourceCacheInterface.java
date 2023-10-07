@@ -7,5 +7,5 @@ public interface ResourceCacheInterface {
     Cache GetCache(CacheId id) throws Throwable;
 
     //上次缓存
-    boolean UploadCache(Cache id) throws Throwable;
+    boolean UploadCache(Cache id,String path) throws Throwable;
 }

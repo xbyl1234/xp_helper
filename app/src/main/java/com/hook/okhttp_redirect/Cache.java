@@ -2,11 +2,17 @@ package com.hook.okhttp_redirect;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.common.units;
 import com.tools.hooker.HookTools;
 
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Base64;
+import java.util.Collections;
+import java.util.List;
+
 
 public class Cache {
     public int responseCode = 200;
@@ -59,6 +65,48 @@ public class Cache {
         return null;
     }
 
+    String name(int index) {
+        int nameIndex = index * 2;
+        if (nameIndex < 0 || nameIndex >= headers.length) {
+            return null;
+        }
+        return headers[nameIndex];
+    }
+
+    String value(int index) {
+        int valueIndex = index * 2 + 1;
+        if (valueIndex < 0 || valueIndex >= headers.length) {
+            return null;
+        }
+        return headers[valueIndex];
+    }
+
+    public List<String> getHeader(String name) {
+        List<String> result = null;
+        for (int i = 0, size = headers.length / 2; i < size; i++) {
+            if (name.equalsIgnoreCase(name(i))) {
+                if (result == null) result = new ArrayList<>(2);
+                result.add(value(i));
+            }
+        }
+        return result != null
+                ? Collections.unmodifiableList(result)
+                : Collections.<String>emptyList();
+    }
+
+    private Object CreateResponseBody(byte[] body) throws Throwable {
+        Class ResponseBodyClass = HookTools.FindClass("com.android.okhttp.ResponseBody");
+        Class MediaTypeClass = HookTools.FindClass("com.android.okhttp.MediaType");
+        Method parse = MediaTypeClass.getDeclaredMethod("parse", String.class);
+        Method create = ResponseBodyClass.getDeclaredMethod("create", MediaTypeClass, byte[].class);
+        String ctxType = "";
+        for (String item : getHeader("Content-Type")) {
+            ctxType = item;
+            break;
+        }
+        return create.invoke(null, parse.invoke(null, ctxType), body);
+    }
+
     public Object CreateResponseBody(Object req) throws Throwable {
         Class builder = HookTools.FindClass("com.android.okhttp.Response$Builder");
         ResponseBuilderProxy proxy = new ResponseBuilderProxy(HookTools.CallConstructor(builder));
@@ -67,6 +115,7 @@ public class Cache {
         proxy.code(responseCode);
         proxy.message(responseMessage);
         proxy.protocol(createProtocol());
+        proxy.body(CreateResponseBody(body));
         return proxy.build();
     }
 }

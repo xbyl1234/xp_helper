@@ -17,9 +17,11 @@ public class HttpEngine extends FakeClassBase {
     static Field RequestField;
     static Field ResponseField;
     ResourceCacheInterface resourceCache;
+    String pkgName;
 
-    public HttpEngine(ResourceCacheInterface resourceCache) {
+    public HttpEngine(ResourceCacheInterface resourceCache, String pkgName) {
         this.resourceCache = resourceCache;
+        this.pkgName = pkgName;
     }
 
     URL GetObjectUrl(XC_MethodHook.MethodHookParam params) throws Throwable {
@@ -117,7 +119,7 @@ public class HttpEngine extends FakeClassBase {
             log.i("call after readResponse " + req.url() + ", resp: " + resp);
             if (resp.GetCode() == 200) {
                 Cache newCache = new Cache(req.url(), resp.GetHeaders(), resp.GetBodyBytes());
-                resourceCache.UploadCache(newCache);
+                resourceCache.UploadCache(newCache, "/data/data/" + pkgName + "/" + newCache.id.md5);
             } else {
                 log.i("readResponse " + req.url() + ", resp error code: " + resp.GetCode());
             }

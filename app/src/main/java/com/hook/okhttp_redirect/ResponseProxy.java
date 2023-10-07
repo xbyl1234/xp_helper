@@ -1,8 +1,12 @@
 package com.hook.okhttp_redirect;
 
+import com.common.log;
+import com.common.units;
 import com.tools.hooker.HookTools;
 import com.tools.proxy.ProxyClass;
 
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.lang.reflect.Method;
 
 public class ResponseProxy extends ProxyClass<ResponseProxy> {
@@ -10,10 +14,10 @@ public class ResponseProxy extends ProxyClass<ResponseProxy> {
         super(originObject);
     }
 
-
     public byte[] GetBodyBytes() throws Throwable {
         Object realResponseBody = HookTools.GetFieldValue(originClass, originObject, "body");
-        Method bytes = realResponseBody.getClass().getDeclaredMethod("bytes");
+        Class ResponseBodyClass = HookTools.FindClass("com.android.okhttp.ResponseBody");
+        Method bytes = ResponseBodyClass.getDeclaredMethod("bytes");
         byte[] bodyData = (byte[]) bytes.invoke(realResponseBody);
 
         Object bufferedSource = HookTools.GetFieldValue(realResponseBody.getClass(), realResponseBody, "source");

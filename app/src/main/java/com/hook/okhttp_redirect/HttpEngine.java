@@ -6,7 +6,9 @@ import com.tools.hooker.FakeClassBase;
 import com.tools.hooker.FakeMethod;
 import com.tools.hooker.HookTools;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.net.URL;
 
 import de.robv.android.xposed.XC_MethodHook;
@@ -88,8 +90,25 @@ public class HttpEngine extends FakeClassBase {
     private Object connect(XC_MethodHook.MethodHookParam params) throws Throwable {
         log.i("call connect " + GetRequest(params));
         Object result = CallOriginalMethod(params);
-        log.i("call after connect " + GetRequest(params) + ", resp: " + GetResponse(params));
+        log.i("call after connect " + GetRequest(params));
         return result;
+    }
+
+
+    Object CreateCacheStrategy(Object req) throws Throwable {
+        Class FactoryClass = HookTools.FindClass("com.android.okhttp.internal.http.CacheStrategy$Factory");
+        Class RequestClass = HookTools.FindClass("com.android.okhttp.Request");
+        Class ResposeClass = HookTools.FindClass("com.android.okhttp.Response");
+        Constructor constructor = FactoryClass.getConstructor(long.class, RequestClass, ResposeClass);
+        Object factory = HookTools.CallConstructor(constructor, System.currentTimeMillis(), req, null);
+        Method get = FactoryClass.getDeclaredMethod("get");
+        return get.invoke(factory);
+    }
+
+    Object CreateRetryableSink() throws Throwable {
+        Class RetryableSink = HookTools.FindClass("com.android.okhttp.internal.http.RetryableSink");
+        Constructor constructor = RetryableSink.getConstructor();
+        return HookTools.CallConstructor(constructor);
     }
 
     @FakeMethod(needXposedParams = true)
@@ -99,10 +118,14 @@ public class HttpEngine extends FakeClassBase {
         boolean hasCache = resourceCache.HasCache(cacheId);
         log.i("sendRequest: " + req.url() + ", hasCache: " + hasCache);
         if (hasCache) {
+            HookTools.SetField(params.thisObject.getClass(), params.thisObject, "cacheStrategy",
+                    CreateCacheStrategy(req.originObject));
+            HookTools.SetField(params.thisObject.getClass(), params.thisObject, "requestBodyOut",
+                    CreateRetryableSink());
             return;
         }
         log.i("call sendRequest " + req.url());
-        Object result = CallOriginalMethod(params);
+        CallOriginalMethod(params);
         log.i("call after sendRequest " + req.url());
     }
 
@@ -126,7 +149,7 @@ public class HttpEngine extends FakeClassBase {
         } else {
             log.i("readResponse return cache " + req.url());
             Cache cache = resourceCache.GetCache(cacheId);
-            SetResponse(params, cache.CreateResponseBody(req));
+            SetResponse(params, cache.CreateResponseBody(req.originObject));
         }
     }
 

@@ -2,13 +2,16 @@ package com.hook.okhttp_redirect;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.common.log;
 import com.common.units;
 import com.tools.hooker.HookTools;
 
 import java.io.IOException;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Base64;
 import java.util.Collections;
 import java.util.List;
@@ -50,9 +53,10 @@ public class Cache {
         return body;
     }
 
-    private Object createHeaders() {
+    private Object createHeaders() throws Throwable {
         Class Headers = HookTools.FindClass("com.android.okhttp.Headers");
-        return HookTools.CallConstructor(Headers, headers);
+        Constructor constructor = Headers.getDeclaredConstructor(String[].class);
+        return HookTools.CallConstructor(constructor, (Object) Arrays.copyOf(headers, headers.length));
     }
 
     private Object createProtocol() {

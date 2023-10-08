@@ -19,12 +19,15 @@ public class CacheId {
 
     public Map<String, String> toMap() {
         Map<String, String> map = new HashMap<>();
-        if (!md5.isEmpty())
+        if (!md5.isEmpty()){
             map.put("md5", md5);
-        if (!channel.isEmpty())
+        }
+        if (channel != null && !channel.isEmpty()) {
             map.put("channel", channel);
-        if (!path.isEmpty())
+        }
+        if (path != null && !path.isEmpty()){
             map.put("path", path);
+        }
         return map;
     }
 }

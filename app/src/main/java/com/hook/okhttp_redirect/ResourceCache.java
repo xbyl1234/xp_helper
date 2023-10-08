@@ -77,7 +77,8 @@ public class ResourceCache implements ResourceCacheInterface {
         try {
             Uri.Builder uriBuild = new Uri.Builder()
                     .scheme("http")
-                    .path(ServiceIp + ":" + ServicePort + url);
+                    .encodedAuthority(ServiceIp + ":" + ServicePort)
+                    .appendPath(url);
             for (String key : query.keySet()) {
                 uriBuild.appendQueryParameter(key, query.get(key));
             }

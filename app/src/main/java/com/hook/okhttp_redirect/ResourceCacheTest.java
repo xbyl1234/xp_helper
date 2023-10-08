@@ -10,7 +10,7 @@ public class ResourceCacheTest implements ResourceCacheInterface {
     //查询是否有缓存
     @Override
     public boolean HasCache(CacheId id) throws Throwable {
-        return true;
+        return false;
     }
 
     //下载缓存

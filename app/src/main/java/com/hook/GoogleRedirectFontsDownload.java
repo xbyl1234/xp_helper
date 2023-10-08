@@ -3,6 +3,7 @@ package com.hook;
 import com.common.log;
 import com.hook.okhttp_redirect.FakeRealBufferedSource;
 import com.hook.okhttp_redirect.HttpEngine;
+import com.hook.okhttp_redirect.ResourceCache;
 import com.hook.okhttp_redirect.ResourceCacheTest;
 import com.tools.hooker.Hooker;
 
@@ -16,11 +17,8 @@ public class GoogleRedirectFontsDownload implements IXposedHookLoadPackage {
 //            return;
 //        }
         log.i("hook fonts inject process: " + lpparam.processName);
-//        FakeDelegatingHttpsURLConnection fakeConn = new FakeDelegatingHttpsURLConnection(new ResourceCacheTest());
-//        Hooker.HookClass(lpparam.classLoader, FakeDelegatingHttpsURLConnection.class, fakeConn);
-//        Hooker.HookClass(lpparam.classLoader, OkHttpCall.class, new OkHttpCall());
         Hooker.HookClass(lpparam.classLoader, FakeRealBufferedSource.class, new FakeRealBufferedSource());
-        Hooker.HookClass(lpparam.classLoader, HttpEngine.class, new HttpEngine(new ResourceCacheTest(), lpparam.packageName));
+        Hooker.HookClass(lpparam.classLoader, HttpEngine.class, new HttpEngine(new ResourceCache(), lpparam.packageName));
 
 //        XposedHelpers.findAndHookMethod(HttpURLConnection.class, "connect", new XC_MethodHook() {
 //            @Override

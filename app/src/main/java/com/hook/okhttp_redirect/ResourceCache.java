@@ -21,13 +21,8 @@ import okhttp3.Response;
 import okhttp3.ResponseBody;
 
 public class ResourceCache implements ResourceCacheInterface {
-    static class ApiResponse {
-        int code;
-        String data;
-    }
-
-    static public String ServiceIp;
-    static public String ServicePort;
+    static public String ServiceIp = "127.0.0.1";
+    static public String ServicePort = "9002";
     public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
     public static final MediaType Bin = MediaType.parse("application/octet-stream");
     OkHttpClient client = new OkHttpClient();

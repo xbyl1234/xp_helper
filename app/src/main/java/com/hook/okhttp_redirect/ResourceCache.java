@@ -82,8 +82,9 @@ public class ResourceCache implements ResourceCacheInterface {
             for (String key : query.keySet()) {
                 uriBuild.appendQueryParameter(key, query.get(key));
             }
+            String wholeUrl = uriBuild.build().toString();
             Request request = new Request.Builder()
-                    .url(uriBuild.build().toString())
+                    .url(wholeUrl)
                     .build();
             Response response = client.newCall(request).execute();
             if (!response.isSuccessful()) {
@@ -93,7 +94,9 @@ public class ResourceCache implements ResourceCacheInterface {
             if (responseBody == null) {
                 throw new Exception("response is null!");
             }
-            return JSONObject.parseObject(new String(responseBody.bytes()));
+            String result = new String(responseBody.bytes());
+            log.i("http " + wholeUrl + ": " + result);
+            return JSONObject.parseObject(result);
         } catch (Throwable e) {
             log.e("cache http request error: " + e);
             e.printStackTrace();
@@ -104,18 +107,19 @@ public class ResourceCache implements ResourceCacheInterface {
     //查询是否有缓存
     @Override
     public boolean HasCache(CacheId id) throws Throwable {
-        JSONObject respJson = httpGet("/has_cache", id.toMap());
+        JSONObject respJson = httpGet("has_cache", id.toMap());
         return respJson.getString("data").equals("true");
     }
 
     //下载缓存
     @Override
     public Cache GetCache(CacheId id) throws Throwable {
-        JSONObject respJson = httpGet("/download_cache", id.toMap());
+        JSONObject respJson = httpGet("download_cache", id.toMap());
         String data = respJson.getString("data");
         if (data == null || data.isEmpty()) {
             throw new Exception("download error");
         }
+        data = data.substring(1, data.length() - 1);
         return new Cache(id, Base64.getDecoder().decode(data));
     }
 
@@ -124,7 +128,7 @@ public class ResourceCache implements ResourceCacheInterface {
     public boolean UploadCache(Cache cache, String path) throws Throwable {
         cache.id.path = path;
         units.save_file(path, cache.ToJson().toJSONString().getBytes(StandardCharsets.UTF_8));
-        JSONObject respJson = httpGet("/upload_cache", cache.id.toMap());
+        JSONObject respJson = httpGet("upload_cache", cache.id.toMap());
         return respJson.getString("data").equals("true");
     }
 

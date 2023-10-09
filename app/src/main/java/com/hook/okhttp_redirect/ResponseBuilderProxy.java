@@ -33,11 +33,11 @@ public class ResponseBuilderProxy extends ProxyClass<ResponseBuilderProxy> {
         return this;
     }
 
-    @ProxyMethod
-    public ResponseBuilderProxy handshake(@ProxyParams(ClassName = "com.android.okhttp.Handshake") Object handshake) throws Throwable {
-        invoke("handshake", handshake);
-        return this;
-    }
+//    @ProxyMethod
+//    public ResponseBuilderProxy handshake(@ProxyParams(ClassName = "com.android.okhttp.Handshake") Object handshake) throws Throwable {
+//        invoke("handshake", handshake);
+//        return this;
+//    }
 
     @ProxyMethod
     public ResponseBuilderProxy header(String name, String value) throws Throwable {
@@ -45,17 +45,17 @@ public class ResponseBuilderProxy extends ProxyClass<ResponseBuilderProxy> {
         return this;
     }
 
-    @ProxyMethod
-    public ResponseBuilderProxy addHeader(String name, String value) throws Throwable {
-        invoke("addHeader", name, value);
-        return this;
-    }
-
-    @ProxyMethod
-    public ResponseBuilderProxy removeHeader(String name) throws Throwable {
-        invoke("removeHeader", name);
-        return this;
-    }
+//    @ProxyMethod
+//    public ResponseBuilderProxy addHeader(String name, String value) throws Throwable {
+//        invoke("addHeader", name, value);
+//        return this;
+//    }
+//
+//    @ProxyMethod
+//    public ResponseBuilderProxy removeHeader(String name) throws Throwable {
+//        invoke("removeHeader", name);
+//        return this;
+//    }
 
     @ProxyMethod
     public ResponseBuilderProxy headers(@ProxyParams(ClassName = "com.android.okhttp.Headers") Object headers) throws Throwable {
@@ -69,33 +69,33 @@ public class ResponseBuilderProxy extends ProxyClass<ResponseBuilderProxy> {
         return this;
     }
 
-    @ProxyMethod
-    public ResponseBuilderProxy networkResponse(@ProxyParams(ClassName = "com.android.okhttp.Response") Object networkResponse) throws Throwable {
-        invoke("networkResponse", networkResponse);
-        return this;
-    }
+//    @ProxyMethod
+//    public ResponseBuilderProxy networkResponse(@ProxyParams(ClassName = "com.android.okhttp.Response") Object networkResponse) throws Throwable {
+//        invoke("networkResponse", networkResponse);
+//        return this;
+//    }
+//
+//    @ProxyMethod
+//    public ResponseBuilderProxy cacheResponse(@ProxyParams(ClassName = "com.android.okhttp.Response") Object cacheResponse) throws Throwable {
+//        invoke("cacheResponse", cacheResponse);
+//        return this;
+//    }
+//
+//    @ProxyMethod
+//    public ResponseBuilderProxy priorResponse(@ProxyParams(ClassName = "com.android.okhttp.Response") Object priorResponse) throws Throwable {
+//        invoke("priorResponse", priorResponse);
+//        return this;
+//    }
 
-    @ProxyMethod
-    public ResponseBuilderProxy cacheResponse(@ProxyParams(ClassName = "com.android.okhttp.Response") Object cacheResponse) throws Throwable {
-        invoke("cacheResponse", cacheResponse);
-        return this;
-    }
+//    @ProxyMethod
+//    private void checkPriorResponse(@ProxyParams(ClassName = "com.android.okhttp.Response") Object response) throws Throwable {
+//        invoke("checkPriorResponse", response);
+//    }
 
-    @ProxyMethod
-    public ResponseBuilderProxy priorResponse(@ProxyParams(ClassName = "com.android.okhttp.Response") Object priorResponse) throws Throwable {
-        invoke("priorResponse", priorResponse);
-        return this;
-    }
-
-    @ProxyMethod
-    private void checkPriorResponse(@ProxyParams(ClassName = "com.android.okhttp.Response") Object response) throws Throwable {
-        invoke("checkPriorResponse", response);
-    }
-
-    @ProxyMethod
-    private void checkSupportResponse(String name, @ProxyParams(ClassName = "com.android.okhttp.Response") Object response) throws Throwable {
-        invoke("checkSupportResponse", name, response);
-    }
+//    @ProxyMethod
+//    private void checkSupportResponse(String name, @ProxyParams(ClassName = "com.android.okhttp.Response") Object response) throws Throwable {
+//        invoke("checkSupportResponse", name, response);
+//    }
 
     @ProxyMethod
     public Object build() throws Throwable {

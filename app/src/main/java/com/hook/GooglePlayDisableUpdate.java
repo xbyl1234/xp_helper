@@ -2,6 +2,7 @@ package com.hook;
 
 import android.app.Application;
 import android.content.Context;
+
 import com.common.log;
 import com.common.units;
 import com.tools.hooker.HookTools;
@@ -65,7 +66,7 @@ public class GooglePlayDisableUpdate implements IXposedHookLoadPackage {
 
     @Override
     public void handleLoadPackage(XC_LoadPackage.LoadPackageParam lpparam) throws Throwable {
-        if (!lpparam.packageName.equals("com.android.vending")){
+        if (!lpparam.packageName.equals("com.android.vending")) {
             return;
         }
         XposedHelpers.findAndHookMethod(Application.class, "attach", Context.class, new XC_MethodHook() {
@@ -80,6 +81,8 @@ public class GooglePlayDisableUpdate implements IXposedHookLoadPackage {
                     packageVersion = "36.9.16";
                 } else if (packageVersion.contains("37.2.18")) {
                     packageVersion = "37.2.18";
+                } else if (packageVersion.contains("37.7.20")) {
+                    packageVersion = "37.7.20";
                 }
                 PkgInstaller.HookInstaller();
                 GooglePlayDisableUpdate.HookDownload(lpparam, packageVersion, param1 -> {
@@ -117,6 +120,15 @@ public class GooglePlayDisableUpdate implements IXposedHookLoadPackage {
         v37.DownloadMethod = "c";
         v37.ErrorEnumClass = "ndj";
         ClassInfoMap.put("37.2.18", v37);
+
+        ClassInfo v37_7_20 = new ClassInfo();
+        v37_7_20.DeliveryClass = "vdn";
+        v37_7_20.DeliveryMethod = "b";
+        v37_7_20.DeliveryMethodParams1 = "iii";
+        v37_7_20.DownloadClass = "nlq";
+        v37_7_20.DownloadMethod = "c";
+        v37_7_20.ErrorEnumClass = "nkl";
+        ClassInfoMap.put("37.7.20", v37_7_20);
     }
 
     private static Object Get_CANNOT_CONNECT_Enum(Object[] ErrorCodeClassConstructor) {

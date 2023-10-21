@@ -38,18 +38,20 @@ public class FakeDelegatingHttpsURLConnection extends FakeClassBase {
     @Override
     public boolean ShouldFake(XC_MethodHook.MethodHookParam params) {
         URL url = GetObjectUrl(params);
-        if (url != null && url.getHost().contains("fonts.gstatic.com") || url.getHost().contains("baidu.com")) {
-            CacheId cacheId = new CacheId(url);
-            try {
-                boolean hasCache = resourceCache.HasCache(cacheId);
-                log.i("HasCache: " + hasCache + ", " + url.toString());
-                return hasCache;
-            } catch (Throwable e) {
-                log.e("HasCache " + url.toString() + " error: " + e);
-                return false;
-            }
-        }
+        log.i("url: " + url);
         return false;
+//        if (url != null && url.getHost().contains("fonts.gstatic.com") || url.getHost().contains("baidu.com")) {
+//            CacheId cacheId = new CacheId(url);
+//            try {
+//                boolean hasCache = resourceCache.HasCache(cacheId);
+//                log.i("HasCache: " + hasCache + ", " + url.toString());
+//                return hasCache;
+//            } catch (Throwable e) {
+//                log.e("HasCache " + url.toString() + " error: " + e);
+//                return false;
+//            }
+//        }
+//        return false;
     }
 
     @FakeMethod(needXposedParams = true)

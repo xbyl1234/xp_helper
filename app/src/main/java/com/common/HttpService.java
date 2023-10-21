@@ -17,8 +17,8 @@ public class HttpService extends NanoHTTPD {
 
     Map<String, HttpServerCallback> callback = new HashMap<>();
 
-    public HttpService(String ip, int port) {
-        super(ip, port);
+    public HttpService(String ip, int host) {
+        super(ip, host);
     }
 
     private JSONObject parseBody(IHTTPSession session) {

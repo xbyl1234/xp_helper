@@ -1,24 +1,77 @@
 package com.hook;
 
+import android.app.Application;
+import android.content.Context;
+
 import com.common.log;
 import com.hook.okhttp_redirect.FakeRealBufferedSource;
 import com.hook.okhttp_redirect.HttpEngine;
 import com.hook.okhttp_redirect.ResourceCache;
 import com.hook.okhttp_redirect.ResourceCacheTest;
+import com.hook.unused.FakeDelegatingHttpsURLConnection;
+import com.tools.hooker.HookTools;
 import com.tools.hooker.Hooker;
 
+import java.util.Map;
+
 import de.robv.android.xposed.IXposedHookLoadPackage;
+import de.robv.android.xposed.XC_MethodHook;
+import de.robv.android.xposed.XC_MethodReplacement;
+import de.robv.android.xposed.XposedBridge;
+import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
 
 public class GoogleRedirectFontsDownload implements IXposedHookLoadPackage {
+
+
     @Override
     public void handleLoadPackage(XC_LoadPackage.LoadPackageParam lpparam) throws Throwable {
 //        if (!lpparam.packageName.equals("com.google.android.gms")) {
 //            return;
 //        }
-        log.i("hook fonts inject process: " + lpparam.processName);
-        Hooker.HookClass(lpparam.classLoader, FakeRealBufferedSource.class, new FakeRealBufferedSource());
-        Hooker.HookClass(lpparam.classLoader, HttpEngine.class, new HttpEngine(new ResourceCache(), lpparam.packageName));
+//        log.i("hook fonts inject process: " + lpparam.processName);
+//        Hooker.HookClass(lpparam.classLoader, FakeRealBufferedSource.class, new FakeRealBufferedSource());
+//        Hooker.HookClass(lpparam.classLoader, HttpEngine.class, new HttpEngine(new ResourceCache(), lpparam.packageName));
+//        Hooker.HookClass(lpparam.classLoader, FakeDelegatingHttpsURLConnection.class, new FakeDelegatingHttpsURLConnection(new ResourceCache()));
+
+        XposedHelpers.findAndHookMethod(Application.class, "attach", Context.class, new XC_MethodHook() {
+            @Override
+            protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+                System.load("/data/libxphelper.so");
+                log.i("hook fonts inject process: " + lpparam.processName);
+//                Context context = (Context) param.args[0];
+//                XposedHelpers.findAndHookMethod(HookTools.FindClass("avjp", context.getClassLoader()),
+//                        "b", HookTools.FindClass("avki", context.getClassLoader()),
+//                        new XC_MethodHook() {
+//                            @Override
+//                            protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+//                                log.i("call: " + param.args[0]);
+//                            }
+//                        }
+//                );
+//                String packageVersion = context.getPackageManager().getPackageInfo("com.android.vending", 0).versionName;
+//                log.i("inject processName: " + lpparam.processName + ", pkg version: " + packageVersion);
+//                GooglePlayDisableUpdate.ClassInfo v37 = new GooglePlayDisableUpdate.ClassInfo();
+//                v37.DeliveryClass = "utb";
+//                v37.DeliveryMethod = "b";
+//                v37.DeliveryMethodParams1 = "idt";
+//                v37.DownloadClass = "nel";
+//                v37.DownloadMethod = "c";
+//                v37.ErrorEnumClass = "ndj";
+//                Class targetClassDownload = HookTools.FindClass(v37.DownloadClass, lpparam.classLoader);
+//                XposedHelpers.findAndHookMethod(targetClassDownload, v37.DownloadMethod, String.class, Map.class, boolean.class, new XC_MethodReplacement() {
+//                    @Override
+//                    protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+//                        String url = (String) param.args[0];
+//                        log.i("processName: " + lpparam.processName + "\t" + "download url: " + url);
+//                        Object ret = XposedBridge.invokeOriginalMethod(param.method, param.thisObject, param.args);
+//                        log.i("processName: " + lpparam.processName + "\t" + " ret: " + ret.getClass() + "download url: " + url);
+//                        return ret;
+//                    }
+//                });
+            }
+        });
+
 
 //        XposedHelpers.findAndHookMethod(HttpURLConnection.class, "connect", new XC_MethodHook() {
 //            @Override

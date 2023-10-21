@@ -211,6 +211,11 @@ public class units {
             bos.write(buffer, 0, len);
         }
         bos.close();
-        return bos.toByteArray();
+        byte[] result = bos.toByteArray();
+        if (result.length == 0) {
+            return null;
+        }
+        return result;
     }
+
 }

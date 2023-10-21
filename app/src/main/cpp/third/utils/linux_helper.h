@@ -28,18 +28,7 @@ struct MountInfo {
     int mnt_passno;
 };
 
-bool get_mount_list(const char *path, std::vector<MountInfo> &ret);
-
-struct MapsInfo {
-    void *region_start;
-    void *region_end;
-    void *region_offset;
-    std::string permissions;
-    std::string path;
-};
-
-bool get_process_maps(const std::string &libPath, std::vector<MapsInfo> &mapsInfo,
-                      const std::string &wantPerm = "");
+bool get_mount_list(const char *path, std::vector <MountInfo> &ret);
 
 bool copy_file(const std::string &from, const std::string &to);
 
@@ -64,7 +53,7 @@ unsigned long get_file_size(const std::string &path);
 
 bool remove_files(const std::string &path);
 
-bool remove_dir(const string &rootPath, const vector<string> &white, bool deleteRoot);
+bool remove_dir(const string &rootPath, const vector <string> &white, bool deleteRoot);
 
 bool UnMount2(const char *target, int flags);
 
@@ -75,11 +64,21 @@ bool Mount(const char *source, const char *target, const char *fs_type, unsigned
 
 bool mkdir_recursive(const std::string &path, const mode_t mode);
 
+enum class FileType {
+    file,
+    dir,
+    link2file,
+    link2dir,
+    unknown,
+};
+
+FileType get_path_type(const string &path, struct stat *statFile, struct stat *statLink);
+
 bool
 traverse_path(const std::string &rootPath,
               const std::function<bool(const string &path, const string &name,
                                        int mode)> &callback,
-              const vector<string> &whitePath = vector<string>());
+              const vector <string> &whitePath = vector<string>());
 
 template<class Func, class... Args>
 bool singleCase(const string &filePath, bool *isSingle, Func &&callback, Args &&... args) {
@@ -114,3 +113,23 @@ bool singleCase(const string &filePath, bool *isSingle, Func &&callback, Args &&
     callback(std::forward<Args>(args)...);
     return true;
 }
+
+struct MapsInfo {
+    void *region_start;
+    void *region_end;
+    void *region_offset;
+    std::string permissions;
+    std::string path;
+};
+
+class MapsHelper {
+public:
+    vector <MapsInfo> mapsInfo;
+
+    int refresh(const string &libPath = "", const string &wantPerm = "");
+
+    void *get_module_base(const string &libPath);
+
+private:
+    bool get_process_maps(const string &libPath = "", const string &wantPerm = "");
+};

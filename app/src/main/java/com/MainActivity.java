@@ -10,6 +10,7 @@ import android.util.Base64;
 import com.alibaba.fastjson.JSONObject;
 import com.cache_service.CacheServer;
 import com.common.log;
+import com.common.units;
 import com.google.protobuf.FieldType;
 import com.google.protobuf.GeneratedMessageLite;
 import com.google.protobuf.MessageLite;
@@ -42,12 +43,14 @@ public class MainActivity extends Activity {
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        NativeHelper.CopyLib2Data(getApplicationInfo().nativeLibraryDir);
+        NativeHelper.LoadLib();
 
-        CacheServer cacheServer = new CacheServer();
-        try {
-            cacheServer.StartHttpServer(this.getApplicationContext());
-        } catch (Throwable e) {
-            throw new RuntimeException(e);
-        }
+//        CacheServer cacheServer = new CacheServer();
+//        try {
+//            cacheServer.StartHttpServer(this.getApplicationContext());
+//        } catch (Throwable e) {
+//            throw new RuntimeException(e);
+//        }
     }
 }

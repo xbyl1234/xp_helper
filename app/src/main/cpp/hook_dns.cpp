@@ -117,7 +117,7 @@ void *hook_dlopen(const char *filename, int flag) {
 }
 
 
-JNIEXPORT jint JNI_OnLoad(JavaVM *vm, void *reserved) {
+void hook_dns() {
 //    xbyl::init_log("xp_helper", new xbyl::adapter_adb());
     LOGI("hook dns inject!");
 //    fakeHostMap[".gvt1.com"] = "192.168.31.163";
@@ -142,5 +142,4 @@ JNIEXPORT jint JNI_OnLoad(JavaVM *vm, void *reserved) {
 
     DobbyHook(DobbySymbolResolver("libdl.so", "dlopen"), (dobby_dummy_func_t) hook_dlopen,
               (dobby_dummy_func_t *) &phook_dlopen);
-    return JNI_VERSION_1_6;
 }

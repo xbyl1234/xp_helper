@@ -98,3 +98,13 @@ add_library(
 set_target_properties(libhv
         PROPERTIES IMPORTED_LOCATION
         ${LINK_DIR}/libhv.a)
+
+
+file(GLOB base64_src
+        "base64/*.h"
+        "base64/*.cpp"
+        "base64/*.c")
+
+add_library(libbase64
+        STATIC
+        ${base64_src})

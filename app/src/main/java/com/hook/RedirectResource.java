@@ -1,44 +1,59 @@
 package com.hook;
 
-import android.app.Application;
-import android.content.Context;
-
 import com.common.log;
 import com.hook.okhttp_redirect.FakeRealBufferedSource;
 import com.hook.okhttp_redirect.HttpEngine;
 import com.hook.okhttp_redirect.ResourceCache;
 import com.hook.okhttp_redirect.ResourceCacheTest;
 import com.hook.unused.FakeDelegatingHttpsURLConnection;
-import com.tools.hooker.HookTools;
 import com.tools.hooker.Hooker;
-
-import java.util.Map;
 
 import de.robv.android.xposed.IXposedHookLoadPackage;
 import de.robv.android.xposed.XC_MethodHook;
-import de.robv.android.xposed.XC_MethodReplacement;
-import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
 
-public class GoogleRedirectFontsDownload implements IXposedHookLoadPackage {
-
-
+public class RedirectResource implements IXposedHookLoadPackage {
     @Override
     public void handleLoadPackage(XC_LoadPackage.LoadPackageParam lpparam) throws Throwable {
 //        if (!lpparam.packageName.equals("com.google.android.gms")) {
 //            return;
 //        }
-//        log.i("hook fonts inject process: " + lpparam.processName);
-//        Hooker.HookClass(lpparam.classLoader, FakeRealBufferedSource.class, new FakeRealBufferedSource());
-//        Hooker.HookClass(lpparam.classLoader, HttpEngine.class, new HttpEngine(new ResourceCache(), lpparam.packageName));
-//        Hooker.HookClass(lpparam.classLoader, FakeDelegatingHttpsURLConnection.class, new FakeDelegatingHttpsURLConnection(new ResourceCache()));
+        log.i("hook fonts inject process: " + lpparam.processName);
 
-        XposedHelpers.findAndHookMethod(Application.class, "attach", Context.class, new XC_MethodHook() {
+
+        XposedHelpers.findAndHookMethod(System.class, "loadLibrary", String.class, new XC_MethodHook() {
             @Override
-            protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-                System.load("/data/libxphelper.so");
-                log.i("hook fonts inject process: " + lpparam.processName);
+            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                super.beforeHookedMethod(param);
+                if (((String) param.args[0]).contains("libcronet")) {
+                    log.i("not load so");
+                    throw new Exception();
+                }
+            }
+        });
+        XposedHelpers.findAndHookMethod(System.class, "load", String.class, new XC_MethodHook() {
+            @Override
+            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                super.beforeHookedMethod(param);
+                if (((String) param.args[0]).contains("libcronet")) {
+                    log.i("not load so");
+                    throw new Exception();
+                }
+            }
+        });
+
+        ResourceCacheTest resourceCacheTest = new ResourceCacheTest();
+        Hooker.HookClass(lpparam.classLoader, FakeRealBufferedSource.class, new FakeRealBufferedSource());
+        Hooker.HookClass(lpparam.classLoader, HttpEngine.class, new HttpEngine(resourceCacheTest, lpparam.packageName));
+
+
+//        Hooker.HookClass(lpparam.classLoader, FakeDelegatingHttpsURLConnection.class, new FakeDelegatingHttpsURLConnection(new ResourceCacheTest()));
+//        XposedHelpers.findAndHookMethod(Application.class, "attach", Context.class, new XC_MethodHook() {
+//            @Override
+//            protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+//                System.load("/data/libxphelper.so");
+//                log.i("hook fonts inject process: " + lpparam.processName);
 //                Context context = (Context) param.args[0];
 //                XposedHelpers.findAndHookMethod(HookTools.FindClass("avjp", context.getClassLoader()),
 //                        "b", HookTools.FindClass("avki", context.getClassLoader()),
@@ -69,8 +84,8 @@ public class GoogleRedirectFontsDownload implements IXposedHookLoadPackage {
 //                        return ret;
 //                    }
 //                });
-            }
-        });
+    }
+}
 
 
 //        XposedHelpers.findAndHookMethod(HttpURLConnection.class, "connect", new XC_MethodHook() {
@@ -95,7 +110,7 @@ public class GoogleRedirectFontsDownload implements IXposedHookLoadPackage {
 //                return XposedBridge.invokeOriginalMethod(param.method, param.thisObject, param.args);
 //            }
 //        });
-        //version v29
+//version v29
 //        public final HttpResponse b(HttpUriRequest httpUriRequest, agtg agtgVar) {
 //        Class HttpUriRequestClass = XposedHelpers.findClass("org.apache.http.client.methods.HttpUriRequest", lpparam.classLoader);
 //        Method getURI = HttpUriRequestClass.getDeclaredMethod("getURI");
@@ -132,5 +147,5 @@ public class GoogleRedirectFontsDownload implements IXposedHookLoadPackage {
 //                        log.i("hook process: " + lpparam.processName + " ,http request: " + param.args[0] + ", args2: " + param.args[1]);
 //                    }
 //                });
-    }
-}
+//    }
+//}

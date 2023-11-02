@@ -19,7 +19,7 @@
         android:fullBackupContent="@xml/backup_rules"
         android:icon="@mipmap/ic_launcher"
         android:usesCleartextTraffic="true"
-        android:label="RedirectFontsDownload"
+        android:label="RedirectResource"
         android:supportsRtl="true"
         tools:targetApi="31" >
         <activity android:name="com.MainActivity"

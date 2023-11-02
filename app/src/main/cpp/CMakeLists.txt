@@ -9,8 +9,11 @@ add_subdirectory(./third)
 file(GLOB xphelper_src
         "*.h"
         "*.hpp"
-        "*.cpp"
-        "*.c"
+        "main.cpp"
+        "pass_root.cpp"
+        #        "*.cpp"
+        #        "*.c"
+
         )
 
 add_library(
@@ -21,7 +24,7 @@ add_library(
 
 target_link_libraries(
         xphelper
-        dobby
+        #        dobby
         libutils
         ${log-lib}
 )

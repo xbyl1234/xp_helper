@@ -39,13 +39,16 @@ public class HttpEngine extends FakeClassBase {
                 return false;
             }
             log.i("url: " + url);
-            if (url.getHost().contains("fonts.gstatic.com")) {
-                return true;
-            }
-            if (url.getHost().contains("gvt1.com")) {
-                return true;
-            }
+//            if (url.getHost().contains("fonts.gstatic.com")) {
+//                return true;
+//            }
+//            if (url.getHost().contains("gvt1.com")) {
+//                return true;
+//            }
             if (url.getHost().contains("baidu.com")) {
+                return true;
+            }
+            if (url.toString().contains("fdfe/acquire?")) {
                 return true;
             }
         } catch (Throwable e) {

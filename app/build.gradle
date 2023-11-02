@@ -3,11 +3,11 @@ plugins {
 }
 
 android {
-    namespace 'com.RedirectFontsDownload'
+    namespace 'com.RedirectResource'
     compileSdk 33
 
     defaultConfig {
-        applicationId "com.RedirectFontsDownload"
+        applicationId "com.RedirectResource"
         minSdk 27
         targetSdk 33
         versionCode 1

@@ -5,6 +5,10 @@ import android.content.pm.PackageInstaller;
 import com.common.log;
 import com.tools.hooker.HookTools;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
 import de.robv.android.xposed.IXposedHookLoadPackage;
 import de.robv.android.xposed.XC_MethodReplacement;
 import de.robv.android.xposed.XposedBridge;
@@ -12,11 +16,16 @@ import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
 
 public class PkgInstaller implements IXposedHookLoadPackage {
-    static final String GooglePlayPkgName = "com.android.vending";
+    static final List<String> DisAbleList = Arrays.asList(
+            "com.android.vending",
+            "com.google.android.gms",
+            "com.google.android.gsf"
+    );
 
     @Override
     public void handleLoadPackage(XC_LoadPackage.LoadPackageParam lpparam) throws Throwable {
-
+        log.i("PkgInstaller inject process: " + lpparam.processName);
+        HookInstaller();
     }
 
     static boolean HookInstaller() {
@@ -27,7 +36,7 @@ public class PkgInstaller implements IXposedHookLoadPackage {
                     PackageInstaller.SessionParams session = (PackageInstaller.SessionParams) param.args[0];
                     String pkgName = (String) HookTools.GetFieldValue(PackageInstaller.SessionParams.class, session, "appPackageName");
                     log.i("createSession " + pkgName + " --- " + session);
-                    if (pkgName.equals(GooglePlayPkgName)) {
+                    if (DisAbleList.contains(pkgName)) {
                         log.i("intercept createSession " + pkgName + " --- " + session);
                         throw new Exception("createSession");
                     }
@@ -41,7 +50,7 @@ public class PkgInstaller implements IXposedHookLoadPackage {
                         protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
                             String pkgName = (String) param.args[0];
                             log.i("installExistingPackageAsUser " + pkgName);
-                            if (pkgName.equals(GooglePlayPkgName)) {
+                            if (DisAbleList.contains(pkgName)) {
                                 log.i("intercept installExistingPackageAsUser " + pkgName);
                                 throw new Exception("installExistingPackageAsUser");
                             }

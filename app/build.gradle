@@ -3,11 +3,11 @@ plugins {
 }
 
 android {
-    namespace 'com.RedirectResource'
+    namespace 'com.DisableGoogleUpdate'
     compileSdk 33
 
     defaultConfig {
-        applicationId "com.RedirectResource"
+        applicationId "com.DisableGoogleUpdate"
         minSdk 27
         targetSdk 33
         versionCode 1
